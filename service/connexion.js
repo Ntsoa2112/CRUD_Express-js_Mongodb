@@ -1,4 +1,4 @@
-var MongoClient = require('mongodb').MongoClient;
+const MongoClient = require('mongodb').MongoClient;
 var dbo;
 
 module.exports = function() {
@@ -9,7 +9,7 @@ module.exports = function() {
         else{
             MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {
             if (err)throw err;
-            dbo = db.db("madap");
+            dbo = db.db("base");
             process.on('exit', (code) => {
                 dbClose();
             })
