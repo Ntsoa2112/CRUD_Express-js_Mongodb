@@ -19,7 +19,7 @@ module.exports = {
                     if(!verify){
                         //Insertion dans la base de données
                         dbo.collection("utilisateur").insertOne({nom:nom, prenom:prenom, email:email, date_creation:date_creation, date_modification:null}, function(err){
-                            if(err) res.status(500).send({error:err});
+                            if(err) res.status(500).send({error: "Ressource"});
                             res.send({success:"Success"});
                         })
                     }
@@ -34,12 +34,39 @@ module.exports = {
         }
     },
 
+    getUser: function(req, res){
+        console.log("==> GET USER ");
+        var id = req.query.id;
+        if(id.length == 24 ){
+            connexion.then(function(dbo){
+                dbo.collection("utilisateur").findOne({_id: new mongo.ObjectID(id)}, function(err, resultat){
+                    if(err) res.status(500).send({error: "Ressource"});
+                    if(resultat){
+                        res.send(resultat);
+                    }
+                    else{
+                        res.send({success:"Aucune résultat"});
+                    }
+                })
+            })
+        }
+        else{
+            res.status(403).send({error:"Information insuffisante"});
+        }
+    },
+
     list: function(req, res){
         console.log("==> GET LIST");
         connexion.then(function(dbo){
             dbo.collection("utilisateur").find({}, { projection: { nom: 1, prenom: 1, email: 1, date_creation:1 } }).toArray(function(err, resultats){
-                if(err) res.status(500).send("Error: ressource");
-                res.send(resultats);
+                if(err) res.status(500).send({error: "Ressource"});
+                if(resultats.length){
+                    res.send(resultats);
+                }
+                else{
+                    res.send({success:"Aucune résultat"});
+                }
+                
             })
         })
     },
@@ -50,7 +77,7 @@ module.exports = {
         if(id.length == 24){
             connexion.then(function(dbo){
                 dbo.collection("utilisateur").findOneAndDelete({_id: new mongo.ObjectID(id)}, function(err, resultat){
-                    if(err) res.status(500).send("Error: ressource");
+                    if(err) res.status(500).send({error: "Ressource"});
                     if(resultat.value){
                         res.send({success:"Success"});
                     }
@@ -66,7 +93,7 @@ module.exports = {
     },
 
     update: function(req, res){
-        console.log("==> UPDATE : " + req.body.id.length);
+        console.log("==> UPDATE ");
         var id = req.body.id, nom = req.body.nom, prenom = req.body.prenom, email = req.body.email, date_modification = new Date();
         if(id.length == 24 && email){
             connexion.then(function(dbo){

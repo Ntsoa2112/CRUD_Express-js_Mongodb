@@ -5,6 +5,7 @@ const middleware = require("../middleware/auth");
 module.exports = function(router) {   
     router.get("/", controller.index);
     router.post("/api/v1/creation", controller.creation);
+    router.get("/api/v1/utilisateur", controller.getUser);
     router.get("/api/v1/list", controller.list);
     router.post("/api/v1/delete", controller.delete);
     router.post("/api/v1/update", controller.update);
