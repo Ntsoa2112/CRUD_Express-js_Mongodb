@@ -13,3 +13,6 @@ Supprimer un utilisateur: /api/v1/delete  méthode POST
  * Donnée attendue: id
  * Retour: status 200 {"success":"Success"}, 403 {"error":"Utilisateur introuvable"}, 403 {"error":"Information insuffisante"}, 500 {"error":"Ressource"}
 
+Editer un utilisateur: /api/v1/update POST
+ * Données attendues: id, nom, prenom, email
+ * Retour: 200 {"success":"Success"}, 403 {"error":"Utilisateur introuvable"}, 403 {"error":"Adresse email déjà utilisé"}, 403 {"error":"Information insuffisante"}, 500 {"error":"Ressource"}
