@@ -3,11 +3,7 @@ const mongo = require('mongodb');
 const connexion = require('../service/connexion')();
 
 module.exports = {
-    index: function(req, res){
-        console.log("==> GET INDEX");
-        res.send("Bonjour!");
-    },
-
+    //Création d'un utilsateur
     creation: function(req, res){
         console.log("==> POST CREATION");
         var nom = req.body.nom, prenom = req.body.prenom, email = req.body.email, date_creation = new Date();
@@ -37,8 +33,10 @@ module.exports = {
     getUser: function(req, res){
         console.log("==> GET USER ");
         var id = req.query.id;
-        if(id.length == 24 ){
+        //L'id doit être 12 bytes ou une chaine de 24 caracteres
+        if(id.length == 24 ) {
             connexion.then(function(dbo){
+                //Requete d'un utilisateur dans la base de données
                 dbo.collection("utilisateur").findOne({_id: new mongo.ObjectID(id)}, function(err, resultat){
                     if(err) res.status(500).send({error: "Ressource"});
                     if(resultat){
@@ -55,6 +53,7 @@ module.exports = {
         }
     },
 
+    //Requete de tous les utilisateurs dans la base de données
     list: function(req, res){
         console.log("==> GET LIST");
         connexion.then(function(dbo){
@@ -71,6 +70,7 @@ module.exports = {
         })
     },
 
+    //Suppression d'un utilisateur (à partir de son id)
     delete: function(req, res){
         console.log("==> DELETE");
         var id = req.body.id;
@@ -92,11 +92,13 @@ module.exports = {
         }
     },
 
+    //Modification d'un utilisateur
     update: function(req, res){
-        console.log("==> UPDATE ");
+        console.log("==> POST UPDATE ");
         var id = req.body.id, nom = req.body.nom, prenom = req.body.prenom, email = req.body.email, date_modification = new Date();
-        if(id.length == 24 && email){
+        if(id.length == 24 && email && nom && prenom){
             connexion.then(function(dbo){
+                //On vérifie si l'email n'est pas utilisé par d'autre utilisateur
                 service.verification_exist_email(email, dbo, "modification", id).then(function(exist){
                     if(!exist){
                         dbo.collection("utilisateur").findOneAndUpdate({_id: new mongo.ObjectID(id)}, {$set:{nom:nom, prenom:prenom, email:email, date_modification:date_modification}}, {projection:{nom:1},  returnNewDocument: 1}, function(err, resultat){
@@ -120,24 +122,9 @@ module.exports = {
         }
     },
 
-    search: function(req, res){
-        console.log("==> SEARCH");
-        var critere = req.body.critere;
-        if(critere){
-            connexion.then(function(dbo){
-                dbo.collection("utilisateur").find({$or:[{nom: { $regex: ".*"+critere+".*" }}, {prenom:{ $regex: ".*"+critere+".*" }}, {email: { $regex: ".*"+critere+".*" }}]}).toArray(function(err, resultats){
-                    if(err) res.status(500).send("Error: ressource");
-                    if(resultats.length){
-                        res.send({success: resultats});
-                    }
-                    else{
-                        res.send({success: "Aucune résultat"});
-                    }   
-                })
-            })
-        }
-        else{
-            res.status(403).send({error:"Information insuffisante"});
-        }
-    }
+    index: function(req, res){
+        console.log("==> GET INDEX");
+        res.send("Hello world!");
+    },
+
 }
